@@ -30,8 +30,15 @@ vagrant ssh
 ```
 
 In the build folder, we'll have:
-- `boot.tgz` : `vmlinuz`, `System.map`, `config` and `dtbs`
-- `lib.tgz` : `modules` and `firmware`
+
+- `boot.tgz`
+    - `vmlinuz`
+    - `System.map`
+    - `config`
+    - `dtbs`
+- `lib.tgz`
+    - `modules`
+    - `firmware`
 
 ## Setup C.H.I.P.
 
@@ -41,7 +48,7 @@ Login through a serial terminal to the C.H.I.P.
 sudo nmcli device wifi connect '(your wifi network name/SSID)' password '(your wifi password)' ifname wlan0
 ```
 
-`scp` your `build` folder to the chip
+`scp` your `build` folder to the chip.
 
 ```sh
 wget https://github.com/VonJagdstrumel/chip_deploy/archive/master.tar.gz
