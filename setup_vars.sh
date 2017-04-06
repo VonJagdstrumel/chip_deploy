@@ -2,7 +2,7 @@
 
 . build_vars.sh
 
-HOST_NAME=umaru
+HOST_NAME=potato
 LOCALE=fr_FR
 MIRROR=fr
 PHP_NAME=php-7.1.3
