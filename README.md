@@ -26,7 +26,7 @@ Building the kernel is pretty resource intensive. We'll build it in a Vagrant vi
 ```sh
 vagrant up
 vagrant ssh
-/vagrant/build.sh
+sudo /vagrant/build.sh
 ```
 
 In the build folder, we'll have:
@@ -55,5 +55,5 @@ wget https://github.com/VonJagdstrumel/chip_deploy/archive/master.tar.gz
 tar xf master.tar.gz
 cd chip_deploy-master
 mv ../build/ .
-./setup.sh
+sudo ./setup.sh
 ```
