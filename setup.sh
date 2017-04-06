@@ -310,19 +310,44 @@ setupPhp() {
     apt-get autoremove --purge -y
 }
 
-[ "$0" != "$BASH_SOURCE" ] && return
+if [ -z "$*" ]
+then
+    smul=$(tput smul)
+    rmul=$(tput rmul)
+    cat << EOF
+${smul}Usage:${rmul} $(basename "$0") <step>
 
-apt-get remove --purge -y ${PURGE_PACKAGES[@]}
-apt-get autoremove --purge -y
-setupNetwork
-setupKernel
-setupAptitude
-setupSystem
-setupFirewall
-setupSsh
-setupBlink
-setupLiquidPrompt
-setupBash
-setupNginx
-setupMariaDb
-setupPhp
+${smul}Available steps:${rmul}
+network
+kernel
+aptitude
+system
+firewall
+ssh
+blink
+liquidprompt
+bash
+nginx
+mariadb
+php
+full (performs all of the above)
+EOF
+elif [ "$*" = "full" ]
+then
+    apt-get remove --purge -y ${PURGE_PACKAGES[@]}
+    apt-get autoremove --purge -y
+    setupNetwork
+    setupKernel
+    setupAptitude
+    setupSystem
+    setupFirewall
+    setupSsh
+    setupBlink
+    setupLiquidPrompt
+    setupBash
+    setupNginx
+    setupMariaDb
+    setupPhp
+else
+    $(typeset -F | sed 's/^declare -f //' | grep -i "setup$1")
+fi

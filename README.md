@@ -1,6 +1,6 @@
-# chip_deploy
+# chip_install
 
-Basic deploy scripts for [Next Thing Co. C.H.I.P.](https://getchip.com/pages/chip)
+Basic install script for [Next Thing Co. C.H.I.P.](https://getchip.com/pages/chip)
 
 ## Components
 
@@ -18,3 +18,35 @@ Basic deploy scripts for [Next Thing Co. C.H.I.P.](https://getchip.com/pages/chi
 - Custom PHP static build
 - Nginx + PHP-FPM setup
 - MariaDB
+
+## Building kernel
+
+Building the kernel is pretty resource intensive. We'll build it in a Vagrant virtual machine.
+
+```sh
+vagrant up
+vagrant ssh
+/vagrant/build.sh
+```
+
+In the build folder, we'll have:
+- `boot.tgz` : `vmlinuz`, `System.map`, `config` and `dtbs`
+- `lib.tgz` : `modules` and `firmware`
+
+## Setup C.H.I.P.
+
+Login through a serial terminal to the C.H.I.P.
+
+```sh
+sudo nmcli device wifi connect '(your wifi network name/SSID)' password '(your wifi password)' ifname wlan0
+```
+
+`scp` your `build` folder to the chip
+
+```sh
+wget https://github.com/VonJagdstrumel/chip_deploy/archive/master.tar.gz
+tar xf master.tar.gz
+cd chip_deploy-master
+mv ../build/ .
+./setup.sh
+```
