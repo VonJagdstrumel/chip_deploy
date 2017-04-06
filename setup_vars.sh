@@ -1,0 +1,138 @@
+#!/bin/bash
+
+. build_vars.sh
+
+HOST_NAME=umaru
+LOCALE=fr_FR
+MIRROR=fr
+PHP_NAME=php-7.1.3
+TIMEZONE=Europe/Paris
+WPA_PSK='YOUR_SUPER_SECRET'
+WPA_SSID='YOUR_NETWORK'
+
+PURGE_PACKAGES=(
+    avahi-daemon
+    avahi-autoipd
+    network-manager
+    ntp
+    vim-common
+)
+INST_PACKAGES=(
+    anacron
+    aptitude
+    build-essential
+    chkconfig
+    git
+    libgd3
+    libltdl7
+    libmcrypt4
+    libwebp5
+    libxslt1.1
+    libzip2
+    locales
+    mariadb-server
+    oracle-java8-installer
+    screen
+    shorewall6
+    ssh
+    unzip
+    wireless-tools
+    wpasupplicant
+)
+INST_PACKAGES_BPO=(
+    bash-completion
+    nginx-light
+    rsyslog
+    systemd
+)
+PHP_PACKAGES=(
+    apache2-dev
+    autoconf
+    libbz2-dev
+    libcurl4-openssl-dev
+    libfreetype6-dev
+    libgd-dev
+    libgdbm-dev
+    libgmp3-dev
+    libicu-dev
+    libiodbc2-dev
+    libjpeg-dev
+    libmcrypt-dev
+    libpcre3-dev
+    libpng12-dev
+    libsqlite3-dev
+    libssl-dev
+    libsystemd-dev
+    libtool
+    libwebp-dev
+    libxml2-dev
+    libxpm-dev
+    libxslt1-dev
+    libzip-dev
+    pkg-config
+    systemtap-sdt-dev
+)
+PHP_CONFIGURE=(
+    --config-cache
+    --disable-all
+    --disable-phpdbg
+    --disable-rpath
+    --enable-bcmath
+    --enable-calendar
+    --enable-ctype
+    --enable-dom
+    --enable-exif
+    --enable-fileinfo
+    --enable-filter
+    --enable-fpm
+    --enable-gd-native-ttf
+    --enable-hash
+    --enable-huge-code-pages
+    --enable-json
+    --enable-libxml
+    --enable-mbregex
+    --enable-mbregex-backtrack
+    --enable-mbstring
+    --enable-opcache
+    --enable-opcache-file
+    --enable-pcntl
+    --enable-pdo
+    --enable-phar
+    --enable-posix
+    --enable-session
+    --enable-simplexml
+    --enable-sockets
+    --enable-xml
+    --enable-zip
+    --host=arm-linux-gnueabihf
+    --with-bz2
+    --with-curl
+    --with-fpm-systemd
+    --with-freetype-dir=/usr
+    --with-gd=/usr
+    --with-gettext
+    --with-gmp
+    --with-iconv
+    --with-iconv-dir=/usr
+    --with-jpeg-dir=/usr
+    --with-libdir=lib/arm-linux-gnueabihf
+    --with-libxml-dir=/usr
+    --with-libzip
+    --with-mcrypt
+    --with-mysqli
+    --with-openssl
+    --with-openssl-dir=/usr
+    --with-pcre-dir=/usr
+    --with-pcre-regex
+    --with-pdo-mysql
+    --with-pdo-sqlite=/usr
+    --with-pic
+    --with-png-dir=/usr
+    --with-sqlite3=/usr
+    --with-webp-dir=/usr
+    --with-xpm-dir=/usr
+    --with-xsl=/usr
+    --with-zlib
+    --with-zlib-dir=/usr
+    --without-pear
+)

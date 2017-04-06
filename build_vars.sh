@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export LOCALVERSION=-ntc-mlc
+LINUX_VERSION=4.4.13$LOCALVERSION
