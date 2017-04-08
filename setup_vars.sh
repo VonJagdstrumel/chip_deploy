@@ -15,7 +15,6 @@ PURGE_PACKAGES=(
     avahi-autoipd
     network-manager
     ntp
-    vim-common
 )
 INST_PACKAGES=(
     anacron

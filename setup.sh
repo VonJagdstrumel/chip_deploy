@@ -89,8 +89,11 @@ EOF
 
 setupSystem() {
     cat <<'EOF' > /etc/sysctl.d/90-$HOST_NAME.conf
+fs.file-max=100000
 kernel.core_uses_pid=1
+kernel.pid_max=65535
 kernel.sysrq=0
+net.core.somaxconn=4096
 net.ipv4.conf.all.accept_redirects=0
 net.ipv4.conf.all.bootp_relay=0
 net.ipv4.conf.all.forwarding=0
@@ -108,13 +111,16 @@ net.ipv4.tcp_fack=1
 net.ipv4.tcp_fin_timeout=30
 net.ipv4.tcp_keepalive_time=1800
 net.ipv4.tcp_max_syn_backlog=4096
+net.ipv4.tcp_max_tw_buckets=1440000
 net.ipv4.tcp_retries1=3
+net.ipv4.tcp_rfc1337=1
 net.ipv4.tcp_sack=1
 net.ipv4.tcp_syn_retries=3
 net.ipv4.tcp_synack_retries=2
 net.ipv4.tcp_syncookies=1
+net.ipv4.tcp_timestamps=1
 net.ipv4.tcp_timestamps=0
-net.ipv4.tcp_tw_recycle=0
+net.ipv4.tcp_tw_recycle=1
 net.ipv4.tcp_tw_reuse=1
 net.ipv4.tcp_window_scaling=1
 net.ipv6.conf.all.accept_ra_defrtr=0
@@ -214,7 +220,6 @@ server {
 	server_name $HOST_NAME;
 	try_files \$uri \$uri/ =404;
 	server_tokens off;
-	gzip_comp_level 6;
 	gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 
 	location ~ \.php$ {
@@ -286,8 +291,7 @@ setupPhp() {
     sed -ri 's/;(listen.(user|group) =) (nobody|www-data)/\1 www-data/' /usr/local/etc/php-fpm.d/www.conf
     sed -ri 's/;(listen.mode) = 0660)/\1/' /usr/local/etc/php-fpm.d/www.conf
     sed -ri 's:(listen =) 127\.0\.0\.1\:9000:\1 /var/run/php-fpm.sock:' /usr/local/etc/php-fpm.d/www.conf
-    sed -ri 's/(pm =) dynamic/\1 static/' /usr/local/etc/php-fpm.d/www.conf
-    sed -ri 's/(pm.max_children =) 5/\1 1/' /usr/local/etc/php-fpm.d/www.conf
+    sed -ri 's/(pm =) dynamic/\1 ondemand/' /usr/local/etc/php-fpm.d/www.conf
     sed -ri 's:;(chdir = /var/www):\1/html:' /usr/local/etc/php-fpm.d/www.conf
 
     wget http://packages.dotdeb.org/pool/all/p/php7.0/php7.0-fpm_7.0.14-1~dotdeb+8.1_i386.deb
