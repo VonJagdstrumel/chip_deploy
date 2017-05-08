@@ -20,8 +20,6 @@ INST_PACKAGES=(
     anacron
     aptitude
     build-essential
-    chkconfig
-    git
     libgd3
     libltdl7
     libmcrypt4
@@ -31,17 +29,15 @@ INST_PACKAGES=(
     locales
     mariadb-server
     oracle-java8-installer
-    screen
     shorewall6
     ssh
     unzip
-    wireless-tools
     wpasupplicant
 )
 INST_PACKAGES_BPO=(
     bash-completion
+    git
     nginx-light
-    rsyslog
     systemd
 )
 PHP_PACKAGES=(

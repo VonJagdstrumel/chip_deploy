@@ -261,10 +261,6 @@ myisam_sort_buffer_size = 8M
 net_buffer_length = 8K
 sort_buffer_size = 512K
 table_open_cache = 64
-
-character-set-server = utf8
-collation-server = utf8_unicode_ci
-init-connect='SET NAMES utf8'
 EOF
     systemctl restart mysql
 }
