@@ -126,20 +126,32 @@ net.ipv4.tcp_window_scaling=1
 net.ipv6.conf.all.accept_ra_defrtr=0
 net.ipv6.conf.all.accept_ra_pinfo=0
 net.ipv6.conf.all.accept_ra_rtr_pref=0
+net.ipv6.conf.all.accept_redirects=0
 net.ipv6.conf.all.accept_source_route=0
 net.ipv6.conf.all.autoconf=0
 net.ipv6.conf.all.dad_transmits=0
 net.ipv6.conf.all.router_solicitations=0
 EOF
+	sysctl -p 
+	sysctl -w net.ipv4.route.flush=1
+	sysctl -w net.ipv6.route.flush=1
+
+	sed -ri 's:(ExecStart=/usr/sbin/ubihealthd .*):\1 -v3:' /etc/systemd/system/ubihealthd.service
+	systemctl restart ubihealthd 
+	
     sed -ri "s/# ($LOCALE\.UTF-8 UTF-8)/\1/" /etc/locale.gen
     locale-gen
     update-locale LANG=$LOCALE.UTF-8
+	
     echo $TIMEZONE > /etc/timezone
     echo TZ=$TIMEZONE >> /etc/environment
+	
     sed -ri "s/(127\.0\.0\.1\t)chip/\1$HOST_NAME/" /etc/hosts
     hostname $HOST_NAME
     echo $HOST_NAME > /etc/hostname
+	
     passwd -l root
+	updatedb
 }
 
 setupFirewall() {
