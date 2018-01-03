@@ -5,7 +5,6 @@
 HOST_NAME=potato
 LOCALE=fr_FR
 MIRROR=fr
-PHP_NAME=php-7.1.3
 TIMEZONE=Europe/Paris
 WPA_PSK='YOUR_SUPER_SECRET'
 WPA_SSID='YOUR_NETWORK'
@@ -29,6 +28,18 @@ INST_PACKAGES=(
     locales
     mariadb-server
     oracle-java8-installer
+    php7.1-bcmath
+    php7.1-bz2
+    php7.1-curl
+    php7.1-fpm
+    php7.1-gd
+    php7.1-gmp
+    php7.1-mbstring
+    php7.1-mcrypt
+    php7.1-readline
+    php7.1-sqlite3
+    php7.1-xsl
+    php7.1-zip
     shorewall6
     ssh
     unzip
@@ -39,95 +50,4 @@ INST_PACKAGES_BPO=(
     git
     nginx-light
     systemd
-)
-PHP_PACKAGES=(
-    apache2-dev
-    autoconf
-    libbz2-dev
-    libcurl4-openssl-dev
-    libfreetype6-dev
-    libgd-dev
-    libgdbm-dev
-    libgmp3-dev
-    libicu-dev
-    libiodbc2-dev
-    libjpeg-dev
-    libmcrypt-dev
-    libpcre3-dev
-    libpng12-dev
-    libsqlite3-dev
-    libssl-dev
-    libsystemd-dev
-    libtool
-    libwebp-dev
-    libxml2-dev
-    libxpm-dev
-    libxslt1-dev
-    libzip-dev
-    pkg-config
-    systemtap-sdt-dev
-)
-PHP_CONFIGURE=(
-    --config-cache
-    --disable-all
-    --disable-phpdbg
-    --disable-rpath
-    --enable-bcmath
-    --enable-calendar
-    --enable-ctype
-    --enable-dom
-    --enable-exif
-    --enable-fileinfo
-    --enable-filter
-    --enable-fpm
-    --enable-gd-native-ttf
-    --enable-hash
-    --enable-huge-code-pages
-    --enable-json
-    --enable-libxml
-    --enable-mbregex
-    --enable-mbregex-backtrack
-    --enable-mbstring
-    --enable-opcache
-    --enable-opcache-file
-    --enable-pcntl
-    --enable-pdo
-    --enable-phar
-    --enable-posix
-    --enable-session
-    --enable-simplexml
-    --enable-sockets
-    --enable-xml
-    --enable-zip
-    --host=arm-linux-gnueabihf
-    --with-bz2
-    --with-curl
-    --with-fpm-systemd
-    --with-freetype-dir=/usr
-    --with-gd=/usr
-    --with-gettext
-    --with-gmp
-    --with-iconv
-    --with-iconv-dir=/usr
-    --with-jpeg-dir=/usr
-    --with-libdir=lib/arm-linux-gnueabihf
-    --with-libxml-dir=/usr
-    --with-libzip
-    --with-mcrypt
-    --with-mysqli
-    --with-openssl
-    --with-openssl-dir=/usr
-    --with-pcre-dir=/usr
-    --with-pcre-regex
-    --with-pdo-mysql
-    --with-pdo-sqlite=/usr
-    --with-pic
-    --with-png-dir=/usr
-    --with-sqlite3=/usr
-    --with-webp-dir=/usr
-    --with-xpm-dir=/usr
-    --with-xsl=/usr
-    --with-zlib
-    --with-zlib-dir=/usr
-    --without-pear
 )

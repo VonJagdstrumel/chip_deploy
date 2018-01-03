@@ -205,20 +205,20 @@ setupNginx() {
     sed -ri 's/#(server_names_hash_bucket_size 64;)/\1/' /etc/nginx/nginx.conf
     cat << EOF > /etc/nginx/sites-available/$HOST_NAME
 server {
-	listen 80;
-	listen [::]:80;
+    listen 80;
+    listen [::]:80;
 
 	root /var/www/html;
-	index index.html index.htm index.php;
-	server_name $HOST_NAME;
-	try_files \$uri \$uri/ =404;
-	server_tokens off;
-	gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    index index.html index.htm index.php;
+    server_name $HOST_NAME;
+    try_files \$uri \$uri/ =404;
+    server_tokens off;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 
-	location ~ \.php$ {
-		include snippets/fastcgi-php.conf;
-		fastcgi_pass unix:/var/run/php-fpm.sock;
-	}
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+    }
 }
 EOF
     ln -s /etc/nginx/sites-available/$HOST_NAME /etc/nginx/sites-enabled/$HOST_NAME
@@ -247,60 +247,22 @@ EOF
 }
 
 setupPhp() {
-    apt-get install -y -t jessie-backports ${PHP_PACKAGES[@]}
-    ln -s /usr/include/arm-linux-gnueabihf/gmp.h /usr/include/gmp.h
+    sed -ri 's/(display_errors =) Off/\1 stderr/' /etc/php/7.1/cli/php.ini
+    sed -ri "s:;?(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.1/cli/php.ini
+    sed -ri 's/(mail\.add_x_header =) On/\1 Off/' /etc/php/7.1/cli/php.ini
 
-    for i in {1..3}
-    do
-       wget http://$MIRROR$i.php.net/distributions/$PHP_NAME.tar.gz && break
-    done
-    tar -xf $PHP_NAME.tar.gz
-    rm $PHP_NAME.tar.gz
-    cd $PHP_NAME
+    sed -ri 's/(display_errors =) Off/\1 On/' /etc/php/7.1/fpm/php.ini
+    sed -ri 's/(upload_max_filesize =) 2M/\1 20M/' /etc/php/7.1/fpm/php.ini
+    sed -ri "s:;?(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.1/fpm/php.ini
+    sed -ri 's/(mail\.add_x_header =) On/\1 Off/' /etc/php/7.1/fpm/php.ini
+    sed -ri 's/(session\.use_strict_mode =) 0/\1 1/' /etc/php/7.1/fpm/php.ini
 
-    ./configure ${PHP_CONFIGURE[@]}
-    make
-    make install
+    sed -ri 's/(pm =) dynamic/\1 ondemand/' /etc/php/7.1/fpm/pool.d/www.conf
+    sed -ri 's:;(chdir = /var/www):\1/html:' /etc/php/7.1/fpm/pool.d/www.conf
 
-    mv php.ini-production /usr/local/lib/php.ini
-    sed -ri 's/(short_open_tag =) Off/\1 On/' /usr/local/lib/php.ini
-    sed -ri 's/(expose_php =) On/\1 Off/' /usr/local/lib/php.ini
-    sed -ri 's/(display_errors =) Off/\1 On/' /usr/local/lib/php.ini
-    sed -ri 's/(upload_max_filesize =) 2M/\1 8M/' /usr/local/lib/php.ini
-    sed -ri "s/;?(date\.timezone =)/\1 $TIMEZONE/" /usr/local/lib/php.ini
-    sed -ri 's/(mail\.add_x_header =) On/\1 Off/' /usr/local/lib/php.ini
-    sed -ri 's/(session\.use_strict_mode =) 0/\1 1/' /usr/local/lib/php.ini
-    line=$(($(sed -n '/extension=/{=}' /usr/local/lib/php.ini | tail -n 1)+1))
-    sed -i $line'izend_extension=opcache.so' /usr/local/lib/php.ini
-
-    mv /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.conf
-    sed -ri 's:(include=)NONE/(etc/php-fpm\.d/\*\.conf):\1\2:' /usr/local/etc/php-fpm.conf
-
-    mv /usr/local/etc/php-fpm.d/www.conf.default /usr/local/etc/php-fpm.d/www.conf
-    sed -ri 's/;(listen.(user|group) =) (nobody|www-data)/\1 www-data/' /usr/local/etc/php-fpm.d/www.conf
-    sed -ri 's/;(listen.mode) = 0660)/\1/' /usr/local/etc/php-fpm.d/www.conf
-    sed -ri 's:(listen =) 127\.0\.0\.1\:9000:\1 /var/run/php-fpm.sock:' /usr/local/etc/php-fpm.d/www.conf
-    sed -ri 's/(pm =) dynamic/\1 ondemand/' /usr/local/etc/php-fpm.d/www.conf
-    sed -ri 's:;(chdir = /var/www):\1/html:' /usr/local/etc/php-fpm.d/www.conf
-
-    wget http://packages.dotdeb.org/pool/all/p/php7.0/php7.0-fpm_7.0.14-1~dotdeb+8.1_i386.deb
-    ar vx php7.0-fpm_7.0.14-1~dotdeb+8.1_i386.deb
-    tar -xf data.tar.xz
-    mv lib/systemd/system/php7.0-fpm.service /lib/systemd/system/php-fpm.service
-    sed -ri 's/(php)(7\.0)?(-fpm)(7\.0)?/\1\3/' /lib/systemd/system/php-fpm.service
-    sed -ri 's:(/usr)(/sbin/):\1/local\2:' /lib/systemd/system/php-fpm.service
-    sed -ri 's:/(etc/)php/7\.0/fpm/(php-fpm\.conf):/usr/local/\1\2:' /lib/systemd/system/php-fpm.service
-    systemctl enable php-fpm
-    systemctl start php-fpm
-
-    cd ..
-    rm -r $PHP_NAME
+    systemctl restart php7.1-fpm
 
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-    rm /usr/include/gmp.h
-    apt-get remove --purge -y ${PHP_PACKAGES[@]}
-    apt-get autoremove --purge -y
 }
 
 if [ -z "$*" ]
