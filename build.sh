@@ -35,11 +35,9 @@ make CONFIG_PLATFORM_ARM_SUNxI=y -C $workspace/$buildPath/ M=$PWD CONFIG_RTL8723
 make CONFIG_PLATFORM_ARM_SUNxI=y -C $workspace/$buildPath/ M=$PWD CONFIG_RTL8723BS=m modules_install
 cd $workspace
 
-mkdir -p boot/dtbs/$LINUX_VERSION
 mv $buildPath/arch/arm/boot/zImage boot/vmlinuz-$LINUX_VERSION
 mv $buildPath/.config boot/config-$LINUX_VERSION
 mv $buildPath/System.map boot/System.map-$LINUX_VERSION
-mv $buildPath/arch/arm/boot/dts/sun5i-r8-chip.dtb boot/dtbs/$LINUX_VERSION
 rm lib/modules/$LINUX_VERSION/build lib/modules/$LINUX_VERSION/source
 tar -czf /vagrant/build/boot.tgz boot
 tar -czf /vagrant/build/lib.tgz lib

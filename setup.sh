@@ -59,20 +59,17 @@ EOF
 
 setupKernel() {
     tar -xf boot.tgz
-    mv boot/* /boot
-    ln -sf /boot/vmlinuz-$LINUX_VERSION /boot/zImage
-    ln -sf /boot/dtbs/$LINUX_VERSION/sun5i-r8-chip.dtb /boot/sun5i-r8-chip.dtb
+    cp -r boot/ /
     rm boot.tgz
-    rm -rf boot
+    rm -r boot
 
     tar -xf lib.tgz
     cp -r lib/modules/$LINUX_VERSION /lib/modules
     mv lib/firmware /lib/firmware/$LINUX_VERSION
     rm lib.tgz
-    rm -rf lib
+    rm -r lib
 
-    mkinitramfs -o initrd.img-$LINUX_VERSION $LINUX_VERSION
-    mv initrd.img-$LINUX_VERSION /boot
+    update-initramfs -c -t -k "$LINUX_VERSION"
 }
 
 setupAptitude() {
