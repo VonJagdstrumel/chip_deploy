@@ -156,8 +156,8 @@ setupFirewall() {
 setupSsh() {
     rm /etc/ssh/ssh_host_*
     ssh-keygen -A
-    touch /etc/ssh/ssh_host_key
-    chmod 600 /etc/ssh/ssh_host_key
+
+    mv /etc/rc.local.orig /etc/rc.local
 
     sed -ri 's/(PermitRootLogin) yes/\1 no/' /etc/ssh/sshd_config
     sed -ri 's/#(PasswordAuthentication) yes/\1 no/' /etc/ssh/sshd_config
