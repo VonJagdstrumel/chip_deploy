@@ -118,26 +118,25 @@ net.ipv6.conf.all.autoconf=0
 net.ipv6.conf.all.dad_transmits=0
 net.ipv6.conf.all.router_solicitations=0
 EOF
-	sysctl -p 
-	sysctl -w net.ipv4.route.flush=1
-	sysctl -w net.ipv6.route.flush=1
+    sysctl -p
+    sysctl -w net.ipv4.route.flush=1
+    sysctl -w net.ipv6.route.flush=1
 
-	sed -ri 's:(ExecStart=/usr/sbin/ubihealthd .*):\1 -v3:' /etc/systemd/system/ubihealthd.service
-	systemctl restart ubihealthd 
-	
+    sed -ri 's:(ExecStart=/usr/sbin/ubihealthd .*):\1 -v3:' /etc/systemd/system/ubihealthd.service
+    systemctl restart ubihealthd
+
     sed -ri "s/# ($LOCALE\.UTF-8 UTF-8)/\1/" /etc/locale.gen
     locale-gen
     update-locale LANG=$LOCALE.UTF-8
-	
+
     echo $TIMEZONE > /etc/timezone
     echo TZ=$TIMEZONE >> /etc/environment
-	
+
     sed -ri "s/(127\.0\.0\.1\t)chip/\1$HOST_NAME/" /etc/hosts
     hostname $HOST_NAME
     echo $HOST_NAME > /etc/hostname
-	
+
     passwd -l root
-	updatedb
 }
 
 setupFirewall() {
@@ -157,9 +156,11 @@ setupFirewall() {
 setupSsh() {
     rm /etc/ssh/ssh_host_*
     ssh-keygen -A
+
     sed -ri 's/(PermitRootLogin) yes/\1 no/' /etc/ssh/sshd_config
     sed -ri 's/#(PasswordAuthentication) yes/\1 no/' /etc/ssh/sshd_config
     sed -ri 's/(X11Forwarding) yes/\1 no/' /etc/ssh/sshd_config
+
     systemctl restart ssh
 
     mkdir -p /home/chip/.ssh
@@ -194,15 +195,15 @@ setupLiquidPrompt() {
 }
 
 setupBash() {
-    cat /home/chip/.bashrc > /root/.bashrc
-    sed -ri 's/#(shopt -s globstar)/\1/' /root/.bashrc
-    sed -ri 's/#(export GCC_COLORS=)/\1/' /root/.bashrc
-    sed -ri 's/#(alias)/\1/' /root/.bashrc
-    cat <<'EOF' >> /root/.bashrc
+    sed -ri 's/#(shopt -s globstar)/\1/' /home/chip/.bashrc
+    sed -ri 's/#(export GCC_COLORS=)/\1/' /home/chip/.bashrc
+    sed -ri 's/#(alias)/\1/' /home/chip/.bashrc
+    cat <<'EOF' >> /home/chip/.bashrc
 
 [[ $- = *i* ]] && source /opt/liquidprompt/liquidprompt
 EOF
-    cat /root/.bashrc > /home/chip/.bashrc
+
+    cat /home/chip/.bashrc > /root/.bashrc
 }
 
 setupNginx() {
@@ -247,6 +248,7 @@ net_buffer_length = 8K
 sort_buffer_size = 512K
 table_open_cache = 64
 EOF
+
     systemctl restart mysql
 }
 
@@ -269,10 +271,10 @@ setupPhp() {
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 }
 
-if [ -z "$*" ]
-then
+if [ -z "$*" ]; then
     smul=$(tput smul)
     rmul=$(tput rmul)
+
     cat << EOF
 ${smul}Usage:${rmul} $(basename "$0") <step>
 
@@ -287,26 +289,8 @@ blink
 liquidprompt
 bash
 nginx
-mariadb
 php
-full (performs all of the above)
 EOF
-elif [ "$*" = "full" ]
-then
-    apt-get remove --purge -y ${PURGE_PACKAGES[@]}
-    apt-get autoremove --purge -y
-    setupNetwork
-    setupKernel
-    setupAptitude
-    setupSystem
-    setupFirewall
-    setupSsh
-    setupBlink
-    setupLiquidPrompt
-    setupBash
-    setupNginx
-    setupMariaDb
-    setupPhp
 else
     $(typeset -F | sed 's/^declare -f //' | grep -i "setup$1")
 fi
