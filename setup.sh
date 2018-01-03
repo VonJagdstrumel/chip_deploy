@@ -213,7 +213,7 @@ server {
     listen 80;
     listen [::]:80;
 
-	root /var/www/html;
+	root /var/www/html/$HOST_NAME;
     index index.html index.htm index.php;
     server_name $HOST_NAME;
     try_files \$uri \$uri/ =404;
@@ -226,9 +226,11 @@ server {
     }
 }
 EOF
+
+    mkdir /var/www/html/$HOST_NAME
     ln -s /etc/nginx/sites-available/$HOST_NAME /etc/nginx/sites-enabled/$HOST_NAME
     rm /etc/nginx/sites-enabled/default
-    rm /var/www/html/index.nginx-debian.html
+
     systemctl restart nginx
 }
 
