@@ -17,9 +17,7 @@ Basic install script for [Next Thing Co. C.H.I.P.](https://getchip.com/pages/chi
 - [APT repository for Oracle JDK](https://launchpad.net/~webupd8team/+archive/ubuntu/java)
 - Sysctl security parameters
 - Shorewall rulesets
-- [Graceful shutdown through configurable trigger + LED control](https://github.com/fordsfords/blink)
 - [Liquid Prompt](https://github.com/nojhan/liquidprompt)
-- Custom PHP static build
 - Nginx + PHP-FPM setup
 - MariaDB
 
@@ -39,7 +37,6 @@ In the `build` folder, there are:
     - `vmlinuz`
     - `System.map`
     - `config`
-    - `dtbs`
 - `lib.tgz`
     - `modules`
     - `firmware`
