@@ -170,26 +170,19 @@ EOF
 }
 
 setupBlink() {
-    wget -O /usr/local/bin/blink.sh http://fordsfords.github.io/blink/blink.sh
-    chmod +x /usr/local/bin/blink.sh
-    wget -O /etc/systemd/system/blink.service http://fordsfords.github.io/blink/blink.service
-    wget -O /usr/local/etc/blink.cfg http://fordsfords.github.io/blink/blink.cfg
-    sed -ri 's/(BLINK_STATUS=1)/#\1/' /usr/local/etc/blink.cfg
-    systemctl enable blink
-    systemctl start blink
-
     cat <<'EOF' > /etc/systemd/system/blink-disable.service
 [Unit]
 Description=blink-disable
-After=blink.service
+After=default.target
 
 [Service]
 Type=simple
 ExecStart=/bin/sh -c 'echo none > /sys/class/leds/chip\:white\:status/trigger'
 
 [Install]
-WantedBy=blink.service
+WantedBy=default.target
 EOF
+
     systemctl enable blink-disable
     systemctl start blink-disable
 }
