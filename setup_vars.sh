@@ -18,15 +18,11 @@ PURGE_PACKAGES=(
 INST_PACKAGES=(
     anacron
     aptitude
+    at
+    bash-completion
     build-essential
-    libgd3
-    libltdl7
-    libmcrypt4
-    libwebp5
-    libxslt1.1
-    libzip2
-    locales
-    mariadb-server
+    git
+    nginx-light
     oracle-java8-installer
     php7.1-bcmath
     php7.1-bz2
@@ -40,14 +36,11 @@ INST_PACKAGES=(
     php7.1-sqlite3
     php7.1-xsl
     php7.1-zip
+    python
+    python-pip
+    python3
+    python3-pip
     shorewall6
-    ssh
     unzip
     wpasupplicant
-)
-INST_PACKAGES_BPO=(
-    bash-completion
-    git
-    nginx-light
-    systemd
 )

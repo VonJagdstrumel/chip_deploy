@@ -76,15 +76,23 @@ setupKernel() {
 }
 
 setupAptitude() {
-    sed -ri "s/us(\.debian\.org)/$MIRROR\1/" /etc/apt/sources.list
     cat <<'EOF' >> /etc/apt/sources.list
-deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main
+deb http://ftp.us.debian.org/debian/ jessie-updates main contrib non-free
+deb http://ppa.launchpad.net/webupd8team/java/ubuntu zesty main
 EOF
+    sed -ri "s/us(\.debian\.org)/$MIRROR\1/" /etc/apt/sources.list
+    sed -ri '/chip/!s/jessie/buster/' /etc/apt/sources.list
+    sed -ri '/(deb-src|backports)/s/^/#/' /etc/apt/sources.list
+
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+    apt-mark hold flash-kernel
+
     apt-get update
     apt-get dist-upgrade -y
     apt-get install -y ${INST_PACKAGES[@]}
-    apt-get install -y -t jessie-backports ${INST_PACKAGES_BPO[@]}
+    apt-get remove --purge -y ${PURGE_PACKAGES[@]}
+    apt-get autoremove --purge -y
+    apt-get clean
 }
 
 setupSystem() {
