@@ -3,14 +3,12 @@
 . setup_vars.sh
 
 setupNetwork() {
+    systemctl stop NetworkManager
     systemctl stop networking
     systemctl stop wpa_supplicant
-    systemctl disable networking
-    systemctl disable wpa_supplicant
 
     wpa_passphrase "$WPA_SSID" "$WPA_PSK" > /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
     chmod go-rwx /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
-    rm /etc/resolv.conf
     ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
     cat <<'EOF' > /etc/systemd/network/20-wired.network
@@ -19,6 +17,7 @@ Name=usb0
 
 [Network]
 DHCP=yes
+IPv6PrivacyExtensions=kernel
 EOF
     cat <<'EOF' > /etc/systemd/network/25-wireless.network
 [Match]
@@ -26,6 +25,7 @@ Name=wlan0
 
 [Network]
 DHCP=yes
+IPv6PrivacyExtensions=kernel
 EOF
     cat <<'EOF' > /etc/systemd/system/wpa_supplicant@.service
 [Unit]
@@ -35,8 +35,6 @@ After=sys-subsystem-net-devices-%i.device
 Before=network.target
 Wants=network.target
 
-# NetworkManager users will probably want the dbus version instead.
-
 [Service]
 Type=simple
 ExecStart=/sbin/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
@@ -45,13 +43,15 @@ ExecStart=/sbin/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
 Alias=multi-user.target.wants/wpa_supplicant@%i.service
 EOF
 
-    sed -ri "s/#(NTP)=/\1=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org/" /etc/systemd/timesyncd.conf
-    sed -ri "s/#(LLMNR)=.*/\1=yes/" /etc/systemd/resolved.conf
-    #echo DNSStubListener=no >> /etc/systemd/resolved.conf
+    sed -ri 's/#(NTP)=/\1=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org/' /etc/systemd/timesyncd.conf
+    sed -ri 's/#(LLMNR=yes)/\1/' /etc/systemd/resolved.conf
+    sed -ri 's/#(DNSStubListener)=udp/\1=no/' /etc/systemd/resolved.conf
 
     systemctl enable systemd-networkd
     systemctl enable systemd-resolved
     systemctl enable wpa_supplicant@wlan0
+
+    systemctl start systemd-networkd
     systemctl start systemd-resolved
     systemctl start wpa_supplicant@wlan0
     systemctl start systemd-timesyncd
@@ -142,8 +142,14 @@ EOF
 
 setupFirewall() {
     tar -xf shorewall.tar
-    mv etc/ /
+    cp -r etc/ /
     sed -ri 's/(startup)=0/\1=1/' /etc/default/shorewall*
+    rm shorewall.tar
+    rm -r etc
+
+    systemctl enable shorewall
+    systemctl enable shorewall6
+
     systemctl start shorewall
     systemctl start shorewall6
 }
