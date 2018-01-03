@@ -17,7 +17,7 @@ Name=usb0
 
 [Network]
 DHCP=yes
-IPv6PrivacyExtensions=kernel
+IPv6PrivacyExtensions=yes
 EOF
     cat <<'EOF' > /etc/systemd/network/25-wireless.network
 [Match]
@@ -25,7 +25,7 @@ Name=wlan0
 
 [Network]
 DHCP=yes
-IPv6PrivacyExtensions=kernel
+IPv6PrivacyExtensions=yes
 EOF
     cat <<'EOF' > /etc/systemd/system/wpa_supplicant@.service
 [Unit]
