@@ -27,6 +27,14 @@ Name=wlan0
 DHCP=yes
 IPv6PrivacyExtensions=yes
 EOF
+    cat <<'EOF' > /etc/systemd/network/30-bluetooth.network
+[Match]
+Name=bnep0
+
+[Network]
+DHCP=yes
+IPv6PrivacyExtensions=yes
+EOF
     cat <<'EOF' > /etc/systemd/system/wpa_supplicant@.service
 [Unit]
 Description=WPA supplicant daemon (interface-specific version)

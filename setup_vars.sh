@@ -20,8 +20,11 @@ INST_PACKAGES=(
     aptitude
     at
     bash-completion
+    bluez-tools
     build-essential
     git
+    lsof
+    mpg123
     nginx-light
     oracle-java8-installer
     php7.1-bcmath
@@ -36,10 +39,12 @@ INST_PACKAGES=(
     php7.1-sqlite3
     php7.1-xsl
     php7.1-zip
+    pulseaudio-module-bluetooth
     python
     python-pip
     python3
     python3-pip
+    obexftp
     shorewall6
     unzip
     wpasupplicant
