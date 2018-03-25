@@ -94,15 +94,16 @@ EOF
 }
 
 setupKernel() {
-    tar -xf boot.tgz
-    cp -r boot/ /
-    rm boot.tgz
-    rm -r boot
+    tar xf boot.tgz
+    cp -r boot /
 
-    tar -xf lib.tgz
+    tar xf lib.tgz
     cp -r lib/modules/$LINUX_VERSION /lib/modules
     mv lib/firmware /lib/firmware/$LINUX_VERSION
+
+    rm boot.tgz
     rm lib.tgz
+    rm -r boot
     rm -r lib
 
     update-initramfs -c -t -k "$LINUX_VERSION"
@@ -176,9 +177,10 @@ EOF
 }
 
 setupFirewall() {
-    tar -xf shorewall.tar
+    tar xf shorewall.tar
     cp -r etc/ /
     sed -ri 's/(startup)=0/\1=1/' /etc/default/shorewall*
+
     rm shorewall.tar
     rm -r etc
 
@@ -201,7 +203,7 @@ setupSsh() {
 
     systemctl restart ssh
 
-    mkdir -p /home/chip/.ssh
+    mkdir /home/chip/.ssh
     cat <<'EOF' > /home/chip/.ssh/authorized_keys
 YOUR_SSH_KEY
 EOF
@@ -216,7 +218,7 @@ After=default.target
 
 [Service]
 Type=simple
-ExecStart=/bin/sh -c 'echo none > /sys/class/leds/chip\:white\:status/trigger'
+ExecStart=/bin/sh -c 'echo none > /sys/class/leds/chip:white:status/trigger'
 
 [Install]
 WantedBy=default.target
@@ -294,12 +296,12 @@ EOF
 
 setupPhp() {
     sed -ri 's/(display_errors =) Off/\1 stderr/' /etc/php/7.1/cli/php.ini
-    sed -ri "s:;?(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.1/cli/php.ini
+    sed -ri "s:;(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.1/cli/php.ini
     sed -ri 's/(mail\.add_x_header =) On/\1 Off/' /etc/php/7.1/cli/php.ini
 
     sed -ri 's/(display_errors =) Off/\1 On/' /etc/php/7.1/fpm/php.ini
     sed -ri 's/(upload_max_filesize =) 2M/\1 20M/' /etc/php/7.1/fpm/php.ini
-    sed -ri "s:;?(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.1/fpm/php.ini
+    sed -ri "s:;(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.1/fpm/php.ini
     sed -ri 's/(mail\.add_x_header =) On/\1 Off/' /etc/php/7.1/fpm/php.ini
     sed -ri 's/(session\.use_strict_mode =) 0/\1 1/' /etc/php/7.1/fpm/php.ini
 
