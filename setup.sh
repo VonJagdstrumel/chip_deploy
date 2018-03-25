@@ -185,8 +185,8 @@ setupFirewall() {
     systemctl enable shorewall
     systemctl enable shorewall6
 
-    systemctl start shorewall
-    systemctl start shorewall6
+    #systemctl start shorewall
+    #systemctl start shorewall6
 }
 
 setupSsh() {
