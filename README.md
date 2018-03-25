@@ -56,14 +56,24 @@ sudo nmcli device wifi connect '(your wifi network name/SSID)' password '(your w
 ```sh
 wget https://github.com/VonJagdstrumel/chip_deploy/archive/master.tar.gz
 tar xf master.tar.gz
-cd chip_deploy-master
-mv ../build/ .
+cd chip_install-master
+cp build/* .
 ```
 
 Edit `setup_vars.sh` according to your needs.
 
 ```sh
-sudo ./setup.sh
+sudo ./setup.sh aptitude
+sudo ./setup.sh kernel
+sudo ./setup.sh system
+sudo ./setup.sh network
+sudo ./setup.sh ssh
+sudo ./setup.sh firewall
+sudo ./setup.sh blink
+sudo ./setup.sh liquidprompt
+sudo ./setup.sh bash
+sudo ./setup.sh nginx
+sudo ./setup.sh php
 ```
 
 Follow the instructions.
