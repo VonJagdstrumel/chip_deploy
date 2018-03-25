@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -euxo pipefail
 . build_vars.sh
 
 apt-get update

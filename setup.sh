@@ -1,5 +1,30 @@
 #!/bin/bash
 
+if [ -z "$*" ]; then
+    smul=$(tput smul)
+    rmul=$(tput rmul)
+
+    cat << EOF
+${smul}Usage:${rmul} $(basename "$0") <step>
+
+${smul}Available steps:${rmul}
+network
+kernel
+aptitude
+system
+firewall
+ssh
+blink
+liquidprompt
+bash
+nginx
+php
+EOF
+
+    exit 1
+fi
+
+set -euxo pipefail
 . setup_vars.sh
 
 setupNetwork() {
@@ -283,26 +308,5 @@ setupPhp() {
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 }
 
-if [ -z "$*" ]; then
-    smul=$(tput smul)
-    rmul=$(tput rmul)
 
-    cat << EOF
-${smul}Usage:${rmul} $(basename "$0") <step>
-
-${smul}Available steps:${rmul}
-network
-kernel
-aptitude
-system
-firewall
-ssh
-blink
-liquidprompt
-bash
-nginx
-php
-EOF
-else
-    $(typeset -F | sed 's/^declare -f //' | grep -i "setup$1")
-fi
+$(typeset -F | sed 's/^declare -f //' | grep -i "setup$1")
