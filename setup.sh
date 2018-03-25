@@ -28,12 +28,12 @@ set -euxo pipefail
 . setup_vars.sh
 
 setupNetwork() {
-    systemctl stop NetworkManager
     systemctl stop networking
     systemctl stop wpa_supplicant
 
     wpa_passphrase "$WPA_SSID" "$WPA_PSK" > /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
     chmod go-rwx /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+    rm /etc/resolv.conf
     ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
     cat <<'EOF' > /etc/systemd/network/20-wired.network
@@ -43,6 +43,9 @@ Name=usb0
 [Network]
 DHCP=yes
 IPv6PrivacyExtensions=yes
+
+[Link]
+RequiredForOnline=no
 EOF
     cat <<'EOF' > /etc/systemd/network/25-wireless.network
 [Match]
