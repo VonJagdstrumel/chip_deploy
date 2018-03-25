@@ -47,5 +47,6 @@ INST_PACKAGES=(
     obexftp
     shorewall6
     unzip
+    vim
     wpasupplicant
 )
