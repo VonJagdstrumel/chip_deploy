@@ -120,10 +120,10 @@ EOF
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
     apt-mark hold flash-kernel
 
-    apt-get update
-    apt-get dist-upgrade -y
-    apt-get install -y ${INST_PACKAGES[@]}
-    apt-get remove --purge -y ${PURGE_PACKAGES[@]}
+    apt update
+    apt full-upgrade -y
+    apt install -y ${INST_PACKAGES[@]}
+    apt purge -y ${PURGE_PACKAGES[@]}
     apt-get autoremove --purge -y
     apt-get clean
 }
