@@ -111,11 +111,12 @@ setupKernel() {
 setupAptitude() {
     cat <<'EOF' >> /etc/apt/sources.list
 deb http://ftp.us.debian.org/debian/ jessie-updates main contrib non-free
-deb http://ppa.launchpad.net/webupd8team/java/ubuntu bionic main
+deb http://ppa.launchpad.net/webupd8team/java/ubuntu cosmic main
 EOF
     sed -ri "s/us(\.debian\.org)/$MIRROR\1/" /etc/apt/sources.list
     sed -ri '/chip/!s/jessie/buster/' /etc/apt/sources.list
     sed -ri '/(deb-src|backports)/s/^/#/' /etc/apt/sources.list
+    sed -ri 's/opensource.nextthing.co/chip.jfpossibilities.com/' /etc/apt/sources.list
 
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
     apt-mark hold flash-kernel
