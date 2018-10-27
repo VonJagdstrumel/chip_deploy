@@ -174,6 +174,7 @@ EOF
     echo $HOST_NAME > /etc/hostname
 
     passwd -l root
+    echo 'Defaults env_keep += "HOME"' > /etc/sudoers.d/10_keep_home
 }
 
 setupFirewall() {
