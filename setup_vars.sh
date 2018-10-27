@@ -19,13 +19,19 @@ INST_PACKAGES=(
     anacron
     aptitude
     at
+    automake
     bash-completion
     bluez-tools
     build-essential
+    gdb
     git
+    libtool
+    libuv1-dev
     lsof
     mpg123
+    musl-tools
     nginx-light
+    obexftp
     oracle-java8-installer
     php7.3-bcmath
     php7.3-bz2
@@ -39,11 +45,7 @@ INST_PACKAGES=(
     php7.3-xsl
     php7.3-zip
     pulseaudio-module-bluetooth
-    python
-    python-pip
-    python3
     python3-pip
-    obexftp
     shorewall6
     unzip
     vim
