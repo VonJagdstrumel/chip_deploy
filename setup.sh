@@ -16,7 +16,6 @@ firewall
 ssh
 blink
 liquidprompt
-bash
 nginx
 php
 EOF
@@ -234,18 +233,6 @@ setupLiquidPrompt() {
     rm -r liquidprompt/.git
 }
 
-setupBash() {
-    sed -ri 's/#(shopt -s globstar)/\1/' /home/chip/.bashrc
-    sed -ri 's/#(export GCC_COLORS=)/\1/' /home/chip/.bashrc
-    sed -ri 's/#(alias)/\1/' /home/chip/.bashrc
-    cat <<'EOF' >> /home/chip/.bashrc
-
-[[ $- = *i* ]] && source /opt/liquidprompt/liquidprompt
-EOF
-
-    cat /home/chip/.bashrc > /root/.bashrc
-}
-
 setupNginx() {
     sed -ri 's/#(server_names_hash_bucket_size 64;)/\1/' /etc/nginx/nginx.conf
     cat << EOF > /etc/nginx/sites-available/$HOST_NAME
@@ -310,6 +297,5 @@ setupPhp() {
 
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 }
-
 
 $(typeset -F | sed 's/^declare -f //' | grep -i "setup$1")
