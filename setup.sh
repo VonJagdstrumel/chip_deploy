@@ -262,7 +262,7 @@ server {
 
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+        fastcgi_pass unix:/run/php/php7.3-fpm.sock;
     }
 }
 EOF
@@ -295,20 +295,18 @@ EOF
 }
 
 setupPhp() {
-    sed -ri 's/(display_errors =) Off/\1 stderr/' /etc/php/7.1/cli/php.ini
-    sed -ri "s:;(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.1/cli/php.ini
-    sed -ri 's/(mail\.add_x_header =) On/\1 Off/' /etc/php/7.1/cli/php.ini
+    sed -ri 's/(display_errors =) Off/\1 stderr/' /etc/php/7.3/cli/php.ini
+    sed -ri "s:;(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.3/cli/php.ini
 
-    sed -ri 's/(display_errors =) Off/\1 On/' /etc/php/7.1/fpm/php.ini
-    sed -ri 's/(upload_max_filesize =) 2M/\1 20M/' /etc/php/7.1/fpm/php.ini
-    sed -ri "s:;(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.1/fpm/php.ini
-    sed -ri 's/(mail\.add_x_header =) On/\1 Off/' /etc/php/7.1/fpm/php.ini
-    sed -ri 's/(session\.use_strict_mode =) 0/\1 1/' /etc/php/7.1/fpm/php.ini
+    sed -ri 's/(display_errors =) Off/\1 On/' /etc/php/7.3/fpm/php.ini
+    sed -ri 's/(upload_max_filesize =) 2M/\1 20M/' /etc/php/7.3/fpm/php.ini
+    sed -ri "s:;(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.3/fpm/php.ini
+    sed -ri 's/(session\.use_strict_mode =) 0/\1 1/' /etc/php/7.3/fpm/php.ini
 
-    sed -ri 's/(pm =) dynamic/\1 ondemand/' /etc/php/7.1/fpm/pool.d/www.conf
-    sed -ri 's:;(chdir = /var/www):\1/html:' /etc/php/7.1/fpm/pool.d/www.conf
+    sed -ri 's/(pm =) dynamic/\1 ondemand/' /etc/php/7.3/fpm/pool.d/www.conf
+    sed -ri 's:;(chdir = /var/www):\1/html:' /etc/php/7.3/fpm/pool.d/www.conf
 
-    systemctl restart php7.1-fpm
+    systemctl restart php7.3-fpm
 
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 }
