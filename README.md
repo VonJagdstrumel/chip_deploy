@@ -1,6 +1,6 @@
 # chip_install
 
-Basic install script for [Next Thing Co. C.H.I.P.](https://getchip.com/pages/chip)
+Basic install script for [Next Thing Co. C.H.I.P.](https://web.archive.org/web/20180626203032/https://getchip.com/pages/chip)
 
 **Disclaimer:** This project is highly experimental and may completely mess up. The worst that can happen is you'll have to reflash your C.H.I.P.
 
@@ -9,12 +9,14 @@ Basic install script for [Next Thing Co. C.H.I.P.](https://getchip.com/pages/chi
 ## Components
 
 - Custom kernel build
-    - [C.H.I.P.'s official repository](https://github.com/NextThingCo/CHIP-linux/tree/debian/4.4.13-ntc-mlc)
+    - [Patched Linux 4.4.139](https://github.com/kaplan2539/ntc-linux/tree/ntc-stable-mlc-4.4.139)
+    - [Patched RTL8723BS driver](https://github.com/kaplan2539/rtl8723bs/tree/debian)
     - Custom configuration
         - NetFilter modules
         - TCP syncookies
-- Use of systemd-networkd + systemd-resolved + wpa_supplicant instead of NetworkManager + avahi-daemon
-- [APT repository for Oracle JDK](https://launchpad.net/~webupd8team/+archive/ubuntu/java)
+- systemd-networkd + systemd-resolved + wpa_supplicant instead of NetworkManager + avahi-daemon
+- [C.H.I.P. APT repository](http://chip.jfpossibilities.com/chip/debian/)
+- [Oracle JDK APT repository](https://launchpad.net/~webupd8team/+archive/ubuntu/java)
 - Sysctl security parameters
 - Shorewall rulesets
 - [Liquid Prompt](https://github.com/nojhan/liquidprompt)
@@ -23,7 +25,7 @@ Basic install script for [Next Thing Co. C.H.I.P.](https://getchip.com/pages/chi
 
 ## Building kernel
 
-Build the kernel in a Vagrant virtual machine as it's a pretty pretty resource intensive process.
+Build the kernel in a Vagrant virtual machine as it's a pretty resource intensive process.
 
 ```sh
 vagrant up
@@ -71,7 +73,6 @@ sudo ./setup.sh ssh
 sudo ./setup.sh firewall
 sudo ./setup.sh blink
 sudo ./setup.sh liquidprompt
-sudo ./setup.sh bash
 sudo ./setup.sh nginx
 sudo ./setup.sh php
 ```
