@@ -62,6 +62,32 @@ Name=bnep0
 DHCP=yes
 IPv6PrivacyExtensions=yes
 EOF
+    cat <<'EOF' > /etc/systemd/network/35-ap.network
+[Match]
+Name=wlan1
+
+[Network]
+DHCPServer=yes
+Address=192.168.10.1/24
+IPForward=ipv4
+
+[DHCPServer]
+DNS=8.8.8.8
+EOF
+
+    cat <<EOF > /etc/wpa_supplicant/wpa_supplicant-wlan1.conf
+network={
+    frequency=2412
+    group=CCMP
+    key_mgmt=WPA-PSK
+    mode=2
+    pairwise=CCMP
+    proto=RSN
+    psk="1812 Overture"
+    ssid="${HOST_NAME^}"
+}
+EOF
+
     cat <<'EOF' > /etc/systemd/system/wpa_supplicant@.service
 [Unit]
 Description=WPA supplicant daemon (interface-specific version)
@@ -85,10 +111,12 @@ EOF
     systemctl enable systemd-networkd
     systemctl enable systemd-resolved
     systemctl enable wpa_supplicant@wlan0
+    systemctl enable wpa_supplicant@wlan1
 
     systemctl start systemd-networkd
     systemctl start systemd-resolved
     systemctl start wpa_supplicant@wlan0
+    systemctl start wpa_supplicant@wlan1
     systemctl start systemd-timesyncd
 }
 
