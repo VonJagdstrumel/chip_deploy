@@ -121,17 +121,15 @@ EOF
 }
 
 setupKernel() {
-    tar xf boot.tgz
-    cp -r boot /
+    tar xf boot.tgz -C /
+    tar xf lib.tgz -C /
+    #tar xf usr.tgz -C /
 
-    tar xf lib.tgz
-    cp -r lib/modules/$LINUX_VERSION /lib/modules
-    mv lib/firmware /lib/firmware/$LINUX_VERSION
+    ln -s linux-image-4.4.13-ntc-mlc /usr/lib/linux-image-4.4.139-chip
 
     rm boot.tgz
     rm lib.tgz
-    rm -r boot
-    rm -r lib
+    rm usr.tgz
 
     update-initramfs -c -t -k "$LINUX_VERSION"
 }

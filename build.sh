@@ -40,10 +40,18 @@ make -j $cpuCount CONFIG_PLATFORM_ARM_SUNxI=y -C $workspace/$buildPath/ M=$PWD C
 make -j $cpuCount CONFIG_PLATFORM_ARM_SUNxI=y -C $workspace/$buildPath/ M=$PWD CONFIG_RTL8723BS=m modules_install
 cd $workspace
 
-mkdir boot
+mkdir -p boot
+mkdir -p lib/firmware/$LINUX_VERSION
+mkdir -p usr/lib/linux-image-$LINUX_VERSION
+
 cp $buildPath/arch/arm/boot/zImage boot/vmlinuz-$LINUX_VERSION
 cp $buildPath/.config boot/config-$LINUX_VERSION
 cp $buildPath/System.map boot/System.map-$LINUX_VERSION
+cp $buildPath/arch/arm/boot/dts/sun5i-r8-chip.dtb usr/lib/linux-image-$LINUX_VERSION/sun5i-r8-chip.dtb
+
+find lib/firmware -mindepth 1 -maxdepth 1 ! -name 4.4.139-chip -exec mv {} lib/firmware/4.4.139-chip/. \;
 rm lib/modules/$LINUX_VERSION/build lib/modules/$LINUX_VERSION/source
-tar czf /vagrant/build/boot.tgz boot
-tar czf /vagrant/build/lib.tgz lib
+
+tar caf /vagrant/build/boot.tgz boot
+tar caf /vagrant/build/lib.tgz lib
+tar caf /vagrant/build/usr.tgz usr
