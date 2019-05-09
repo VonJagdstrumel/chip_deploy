@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-if [ -z "$*" ]; then
+if [[ $# = 0 ]]; then
     smul=$(tput smul)
     rmul=$(tput rmul)
 
     cat << EOF
-${smul}Usage:${rmul} $(basename "$0") <step>
+${smul}Usage:${rmul} $(basename "$BASH_SOURCE") <step>
 
 ${smul}Available steps:${rmul}
 network
@@ -23,14 +23,13 @@ EOF
     exit 1
 fi
 
-set -euxo pipefail
-. setup_vars.sh
+. "$(dirname "$BASH_SOURCE")/setup_vars.sh"
 
 setupNetwork() {
     systemctl stop networking
     systemctl stop wpa_supplicant
 
-    wpa_passphrase "$WPA_SSID" "$WPA_PSK" > /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+    wpa_passphrase "$SETUP_WPA_SSID" "$SETUP_WPA_PSK" > /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
     chmod go-rwx /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
     rm /etc/resolv.conf
     ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
@@ -84,7 +83,7 @@ network={
     pairwise=CCMP
     proto=RSN
     psk="1812 Overture"
-    ssid="${HOST_NAME^}"
+    ssid="${SETUP_HOSTNAME^}"
 }
 EOF
 
@@ -123,15 +122,15 @@ EOF
 setupKernel() {
     tar xf boot.tgz -C /
     tar xf lib.tgz -C /
-    #tar xf usr.tgz -C /
+    tar xf usr.tgz -C /
 
-    ln -s linux-image-4.4.13-ntc-mlc /usr/lib/linux-image-4.4.139-chip
+    #ln -s linux-image-4.4.13-ntc-mlc /usr/lib/linux-image-4.4.139-chip
 
     rm boot.tgz
     rm lib.tgz
     rm usr.tgz
 
-    update-initramfs -c -t -k "$LINUX_VERSION"
+    update-initramfs -c -t -k $BUILD_FULL_VERSION
 }
 
 setupAptitude() {
@@ -139,7 +138,7 @@ setupAptitude() {
 deb http://ftp.us.debian.org/debian/ jessie-updates main contrib non-free
 deb http://ppa.launchpad.net/webupd8team/java/ubuntu cosmic main
 EOF
-    sed -ri "s/us(\.debian\.org)/$MIRROR\1/" /etc/apt/sources.list
+    sed -ri "s/us(\.debian\.org)/$SETUP_APT_MIRROR\1/" /etc/apt/sources.list
     sed -ri '/chip/!s/jessie/buster/' /etc/apt/sources.list
     sed -ri '/(deb-src|backports)/s/^/#/' /etc/apt/sources.list
     sed -ri 's/opensource.nextthing.co/chip.jfpossibilities.com/' /etc/apt/sources.list
@@ -156,7 +155,7 @@ EOF
 }
 
 setupSystem() {
-    cat <<'EOF' > /etc/sysctl.d/90-$HOST_NAME.conf
+    cat <<'EOF' > /etc/sysctl.d/90-$SETUP_HOSTNAME.conf
 fs.file-max=100000
 kernel.core_uses_pid=1
 kernel.sysrq=0
@@ -188,16 +187,16 @@ EOF
     sed -ri 's:(ExecStart=/usr/sbin/ubihealthd .*):\1 -v3:' /etc/systemd/system/ubihealthd.service
     systemctl restart ubihealthd
 
-    sed -ri "s/# ($LOCALE\.UTF-8 UTF-8)/\1/" /etc/locale.gen
+    sed -ri "s/# ($SETUP_LOCALE\.UTF-8 UTF-8)/\1/" /etc/locale.gen
     locale-gen
-    update-locale LANG=$LOCALE.UTF-8
+    update-locale LANG=$SETUP_LOCALE.UTF-8
 
-    echo $TIMEZONE > /etc/timezone
-    echo TZ=$TIMEZONE >> /etc/environment
+    echo $SETUP_TIMEZONE > /etc/timezone
+    echo TZ=$SETUP_TIMEZONE >> /etc/environment
 
-    sed -ri "s/(127\.0\.0\.1\t)chip/\1$HOST_NAME/" /etc/hosts
-    hostname $HOST_NAME
-    echo $HOST_NAME > /etc/hostname
+    sed -ri "s/(127\.0\.0\.1\t)chip/\1$SETUP_HOSTNAME/" /etc/hosts
+    hostname $SETUP_HOSTNAME
+    echo $SETUP_HOSTNAME > /etc/hostname
 
     passwd -l root
     echo 'Defaults env_keep += "HOME"' > /etc/sudoers.d/10_keep_home
@@ -263,14 +262,14 @@ setupLiquidPrompt() {
 
 setupNginx() {
     sed -ri 's/#(server_names_hash_bucket_size 64;)/\1/' /etc/nginx/nginx.conf
-    cat << EOF > /etc/nginx/sites-available/$HOST_NAME
+    cat << EOF > /etc/nginx/sites-available/$SETUP_HOSTNAME
 server {
     listen 80;
     listen [::]:80;
 
-	root /var/www/html/$HOST_NAME;
+	root /var/www/html/$SETUP_HOSTNAME;
     index index.html index.htm index.php;
-    server_name $HOST_NAME;
+    server_name $SETUP_HOSTNAME;
     try_files \$uri \$uri/ =404;
     server_tokens off;
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
@@ -282,15 +281,15 @@ server {
 }
 EOF
 
-    mkdir /var/www/html/$HOST_NAME
-    ln -s /etc/nginx/sites-available/$HOST_NAME /etc/nginx/sites-enabled/$HOST_NAME
+    mkdir /var/www/html/$SETUP_HOSTNAME
+    ln -s /etc/nginx/sites-available/$SETUP_HOSTNAME /etc/nginx/sites-enabled/$SETUP_HOSTNAME
     rm /etc/nginx/sites-enabled/default
 
     systemctl restart nginx
 }
 
 setupMariaDb() {
-    cat <<'EOF' > /etc/mysql/conf.d/$HOST_NAME.cnf
+    cat <<'EOF' > /etc/mysql/conf.d/$SETUP_HOSTNAME.cnf
 [mysqld]
 skip-archive
 skip-blackhole
@@ -311,11 +310,11 @@ EOF
 
 setupPhp() {
     sed -ri 's/(display_errors =) Off/\1 stderr/' /etc/php/7.3/cli/php.ini
-    sed -ri "s:;(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.3/cli/php.ini
+    sed -ri "s:;(date\.timezone =):\1 $SETUP_TIMEZONE:" /etc/php/7.3/cli/php.ini
 
     sed -ri 's/(display_errors =) Off/\1 On/' /etc/php/7.3/fpm/php.ini
     sed -ri 's/(upload_max_filesize =) 2M/\1 20M/' /etc/php/7.3/fpm/php.ini
-    sed -ri "s:;(date\.timezone =):\1 $TIMEZONE:" /etc/php/7.3/fpm/php.ini
+    sed -ri "s:;(date\.timezone =):\1 $SETUP_TIMEZONE:" /etc/php/7.3/fpm/php.ini
     sed -ri 's/(session\.use_strict_mode =) 0/\1 1/' /etc/php/7.3/fpm/php.ini
 
     sed -ri 's/(pm =) dynamic/\1 ondemand/' /etc/php/7.3/fpm/pool.d/www.conf
@@ -326,4 +325,4 @@ setupPhp() {
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 }
 
-$(typeset -F | sed 's/^declare -f //' | grep -i "setup$1")
+$(typeset -F | sed 's/^declare -f //' | grep -i setup$1)
