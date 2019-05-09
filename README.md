@@ -30,6 +30,7 @@ Build the kernel in a Vagrant virtual machine as it's a pretty resource intensiv
 ```sh
 vagrant up
 vagrant ssh
+mkdir -p ~/chip_workdir && cd $_
 sudo /vagrant/build.sh
 ```
 
@@ -53,13 +54,13 @@ Login through a serial terminal to the C.H.I.P.
 sudo nmcli device wifi connect '(your wifi network name/SSID)' password '(your wifi password)' ifname wlan0
 ```
 
-`scp` your `build` folder to the chip.
+`scp` your `out` folder to the chip.
 
 ```sh
+mkdir -p ~/chip_workdir && cd $_
 wget https://github.com/VonJagdstrumel/chip_deploy/archive/master.tar.gz
 tar xf master.tar.gz
 cd chip_install-master
-cp build/* .
 ```
 
 Edit `setup_vars.sh` according to your needs.
